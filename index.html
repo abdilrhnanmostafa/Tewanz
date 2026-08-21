@@ -7,8 +7,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
     </script>
     <style>
-        /* ===== جميع الأنماط السابقة (نفس الكود) ===== */
-        /* ... (تم حذف التكرار للاختصار، ولكن سيتم تضمينه كاملاً في الرد النهائي) ... */
+        /* ============================================================
+           جميع الأنماط السابقة (نفس الكود)
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -2700,6 +2701,9 @@
             renderCurrentPage();
         }
 
+        // =====================================================================
+        //  تحديث الغرف - يتم استدعاؤها بعد كل تغيير للتأكد من تحديث البيانات
+        // =====================================================================
         async function refreshRooms() {
             const { data: roomsData, error } = await supabase
                 .from('rooms')
@@ -2716,6 +2720,7 @@
                 if (state.currentTab === 'home') renderHome();
             } else if (error) {
                 console.error('خطأ في تحديث الغرف:', error);
+                showToast('خطأ في تحديث الغرف: ' + error.message, 'error');
             }
         }
 
@@ -2744,7 +2749,6 @@
                 .channel('rooms-channel')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, async (payload) => {
                     console.log('📢 حدث في الغرف:', payload.eventType, payload.new?.id || payload.old?.id);
-                    // نعيد تحميل الغرف بالكامل
                     await refreshRooms();
                 })
                 .subscribe();
@@ -2977,9 +2981,14 @@
             await refreshRooms(); // تحديث من قاعدة البيانات للتأكد
         }
 
+        // =====================================================================
+        //  دالة الجلوس - تم تعديلها لعرض رسالة خطأ واضحة وإضافة تأخير
+        // =====================================================================
         async function joinRoom(roomId, seatIndex) {
             const room = state.rooms.find(r => r.id === roomId);
             if (!room) { showToast('الغرفة غير موجودة', 'error'); return; }
+
+            // التحقق من الحظر
             const { data: banData } = await supabase
                 .from('room_bans')
                 .select('*')
@@ -2987,6 +2996,8 @@
                 .eq('user_id', state.currentUser.id)
                 .single();
             if (banData) { showToast('🚫 أنت محظور من هذه الغرفة', 'error'); return; }
+
+            // التحقق من نوع الغرفة
             if (room.type === 'private' && room.owner_id !== state.currentUser.id) {
                 const isInvited = state.friends.some(f => f.id === state.currentUser.id) || room.owner_id === state
                     .currentUser.id;
@@ -2997,20 +3008,38 @@
                 if (!user.vip && user.role !== 'admin') { showToast('👑 هذه غرفة VIP. فقط المشاهير يمكنهم الانضمام.',
                         'error'); return; }
             }
+
             const seats = room.seats || new Array(8).fill(null);
             if (seats[seatIndex] !== null) { showToast('هذا المقعد مشغول', 'error'); return; }
+
+            // إزالة المستخدم من أي مقعد آخر
             for (let i = 0; i < seats.length; i++) { if (seats[i] === state.currentUser.id) seats[i] = null; }
+
             seats[seatIndex] = state.currentUser.id;
+
+            // محاولة التحديث في قاعدة البيانات
             const { error } = await supabase.from('rooms').update({ seats }).eq('id', roomId);
-            if (error) { showToast('خطأ في الجلوس على المقعد', 'error'); return; }
+
+            if (error) {
+                console.error('خطأ في الجلوس:', error);
+                showToast('❌ خطأ في الجلوس على المقعد: ' + error.message, 'error');
+                return;
+            }
+
             // تحديث محلي
             room.seats = seats;
             state.currentRoomId = roomId;
-            showToast(`جلست على المقعد ${seatIndex+1} في ${room.name}`, 'success');
+            showToast(`✅ جلست على المقعد ${seatIndex+1} في ${room.name}`, 'success');
+
             if (!state.voiceActive) { startLocalVoice(); } else { state.isMuted = false; if (mediaStream) mediaStream.getTracks()
                     .forEach(track => track.enabled = true); }
+
             renderRooms();
-            await refreshRooms(); // تحديث من قاعدة البيانات للتأكد
+
+            // تأخير بسيط ثم تحديث من قاعدة البيانات للتأكد من التزامن
+            setTimeout(async () => {
+                await refreshRooms();
+            }, 500);
         }
 
         async function leaveRoom(roomId) {
@@ -3027,11 +3056,11 @@
             if (state.currentRoomId === roomId) { state.currentRoomId = null; if (state.voiceActive) stopLocalVoice(); }
             showToast('غادرت الغرفة', 'error');
             renderRooms();
-            await refreshRooms();
+            setTimeout(async () => { await refreshRooms(); }, 500);
         }
 
         // ============================================================
-        // إجراءات المالك
+        // إجراءات المالك (مع التحقق من الإعدادات ومنع صاحب التطبيق)
         // ============================================================
         async function kickUser(roomId, userId) {
             if (!state.settings.allow_kick) {
@@ -3066,7 +3095,7 @@
             room.seats = seats;
             showToast('🚪 تم طرد المستخدم', 'success');
             renderRooms();
-            await refreshRooms();
+            setTimeout(async () => { await refreshRooms(); }, 500);
         }
 
         async function muteUser(roomId, userId) {
@@ -3119,7 +3148,7 @@
                 showToast('🔇 تم كتم المستخدم', 'success');
             }
             renderRooms();
-            await refreshRooms();
+            setTimeout(async () => { await refreshRooms(); }, 500);
         }
 
         async function banUser(roomId, userId) {
@@ -3164,7 +3193,7 @@
             room.seats = seats;
             showToast('🚫 تم حظر المستخدم من الغرفة', 'success');
             renderRooms();
-            await refreshRooms();
+            setTimeout(async () => { await refreshRooms(); }, 500);
         }
 
         // ============================================================
