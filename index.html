@@ -8,7 +8,7 @@
     </script>
     <style>
         /* ============================================================
-           RESET & ROOT
+           RESET & ROOT (نفس الكود السابق)
            ============================================================ */
         * {
             margin: 0;
@@ -79,8 +79,7 @@
             overflow: hidden;
             position: relative;
         }
-
-        /* STATUS BAR & HEADER */
+        /* ===== جميع الأنماط السابقة ===== */
         .status-bar {
             padding: 4px 20px 4px 16px;
             display: flex;
@@ -2333,7 +2332,6 @@
             currentTab: 'home',
             isLoggedIn: false,
             darkMode: true,
-            // Room state
             currentRoomId: null,
             currentRoom: null,
             seatIndex: -1,
@@ -2345,7 +2343,7 @@
         };
 
         // ============================================================
-        // WEBRTC STATE
+        // WEBRTC STATE (محسّن)
         // ============================================================
         const peers = {};
         let localStream = null;
@@ -2354,13 +2352,18 @@
             dataArray = null,
             animationFrame = null;
 
+        // خوادم TURN/STUN موثوقة
         const rtcConfig = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
                 { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' },
                 { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-                { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }
+                { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+                { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject',
+                    credential: 'openrelayproject' }
             ]
         };
 
@@ -2404,9 +2407,7 @@
 
         function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-        // ============================================================
-        // دالة عرض الصورة مع الإطار الذهبي (الجوهرة)
-        // ============================================================
+        // دالة عرض الصورة مع الإطار الذهبي
         function renderVerifiedAvatar(user, size = 'default', className = '', content = '') {
             if (!user) return '';
             const avatar = content || user.avatar || '👤';
@@ -2648,12 +2649,9 @@
         // ============================================================
         async function loadAllData() {
             if (!state.currentUser) return;
-            // Load users
             const { data: usersData } = await supabase.from('users').select('*');
             state.users = usersData || [];
-            // Load rooms
             await loadRooms();
-            // Load friends
             const { data: friendsData } = await supabase
                 .from('friendships')
                 .select('friend_id')
@@ -2661,7 +2659,6 @@
                 .eq('status', 'accepted');
             const friendIds = friendsData ? friendsData.map(f => f.friend_id) : [];
             state.friends = state.users.filter(u => friendIds.includes(u.id));
-            // Load friend requests
             const { data: requestsData } = await supabase
                 .from('friendships')
                 .select('id, user_id, created_at')
@@ -2673,14 +2670,12 @@
                 time: r.created_at,
                 status: 'pending'
             })) : [];
-            // Load notifications
             const { data: notifsData } = await supabase
                 .from('notifications')
                 .select('*')
                 .eq('user_id', state.currentUser.id)
                 .order('created_at', { ascending: false });
             state.notifications = notifsData || [];
-            // Load messages for friends
             for (let friend of state.friends) {
                 const { data: msgsData } = await supabase
                     .from('messages')
@@ -2744,12 +2739,10 @@
             };
             const page = document.getElementById(pageMap[tab]);
             if (page) page.classList.add('active');
-            // Close room page if open
             if (document.getElementById('room-page').classList.contains('active')) {
                 document.getElementById('room-page').classList.remove('active');
             }
             renderCurrentPage();
-            // Hide search
             document.getElementById('search-bar').style.display = 'none';
             document.getElementById('search-results').style.display = 'none';
         }
@@ -2783,7 +2776,6 @@
         function renderHome() {
             const user = state.currentUser;
             if (user) document.getElementById('home-username').textContent = user.display_name.split(' ')[0];
-            // Featured rooms
             const featured = state.rooms.slice(0, 6);
             document.getElementById('featured-rooms').innerHTML = featured.map(r => {
                 const seats = r.seats || [];
@@ -2799,7 +2791,6 @@
                     <div class="room-meta"><span>⭐ Lv.${r.level || 1}</span><span>🪑 ${online}/8</span></div>
                 </div>`;
             }).join('');
-            // Popular users
             const popular = state.users.sort((a, b) => (b.popularity_level || 1) - (a.popularity_level || 1)).slice(0, 8);
             document.getElementById('popular-users').innerHTML = popular.map(u => {
                 const avatarHtml = renderVerifiedAvatar(u, 'small');
@@ -2812,7 +2803,6 @@
                     <div class="level-badge">LV ${u.popularity_level || 1}</div>
                 </div>`;
             }).join('');
-            // Online friends
             const onlineFriends = state.friends.filter(f => f.online).slice(0, 8);
             document.getElementById('online-friends').innerHTML = onlineFriends.length ? onlineFriends.map(f => {
                 const avatarHtml = renderVerifiedAvatar(f, 'small');
@@ -2825,7 +2815,6 @@
                     <div class="level-badge">LV ${f.popularity_level || 1}</div>
                 </div>`;
             }).join('') : '<div class="text-muted" style="padding:14px;text-align:center;">لا يوجد أصدقاء متصلون</div>';
-            // Activities
             const activities = state.notifications.slice(0, 5);
             document.getElementById('activity-feed').innerHTML = activities.map(n => `
                 <div style="padding:10px 14px;background:var(--bg-glass);border-radius:var(--radius-sm);border:1px solid var(--border-glass);margin-bottom:6px;display:flex;align-items:center;gap:12px;transition:var(--transition);">
@@ -2923,12 +2912,11 @@
         }
 
         // ============================================================
-        // JOIN / LEAVE ROOM
+        // JOIN / LEAVE ROOM (مع إصلاح الصوت)
         // ============================================================
         async function joinRoom(roomId) {
             const room = state.rooms.find(r => r.id === roomId);
             if (!room) { showToast('الغرفة غير موجودة', 'error'); return; }
-            // Check ban
             const { data: banData } = await supabase
                 .from('room_bans')
                 .select('*')
@@ -2936,9 +2924,8 @@
                 .eq('user_id', state.currentUser.id)
                 .single();
             if (banData) { showToast('🚫 أنت محظور من هذه الغرفة', 'error'); return; }
-            // Check type
             if (room.type === 'private' && room.owner_id !== state.currentUser.id) {
-                const isInvited = true; // تبسيط
+                const isInvited = true;
                 if (!isInvited) { showToast('🔒 هذه غرفة خاصة. تحتاج دعوة.', 'error'); return; }
             }
             if (room.type === 'vip' && room.owner_id !== state.currentUser.id) {
@@ -2952,14 +2939,12 @@
         async function enterRoom(roomId) {
             const room = state.rooms.find(r => r.id === roomId);
             if (!room) return;
-            // Find empty seat
             const seats = room.seats || new Array(8).fill(null);
             let emptyIndex = -1;
             for (let i = 0; i < seats.length; i++) {
                 if (seats[i] === null) { emptyIndex = i; break; }
             }
             if (emptyIndex === -1) { showToast('الغرفة ممتلئة', 'error'); return; }
-            // Remove user from any other seat
             for (let i = 0; i < seats.length; i++) {
                 if (seats[i] === state.currentUser.id) seats[i] = null;
             }
@@ -2970,13 +2955,29 @@
             state.currentRoom = { ...room, seats };
             state.seatIndex = emptyIndex;
             showToast(`جلست على المقعد ${emptyIndex+1}`, 'success');
+
+            // ===== START VOICE =====
             await startLocalVoice();
-            renderRoomPage();
-            // Start calls with other users
+
+            // ===== START CALL WITH OTHER USERS =====
             const otherUsers = seats.filter(id => id !== null && id !== state.currentUser.id);
-            if (otherUsers.length > 0 && localStream) {
-                await startCallWithUsers(otherUsers);
+            if (otherUsers.length > 0) {
+                // تأكد من أن التيار الصوتي جاهز قبل بدء المكالمات
+                if (localStream) {
+                    await startCallWithUsers(otherUsers);
+                } else {
+                    // انتظر حتى يصبح التيار جاهزاً
+                    const waitForStream = setInterval(async () => {
+                        if (localStream) {
+                            clearInterval(waitForStream);
+                            await startCallWithUsers(otherUsers);
+                        }
+                    }, 300);
+                    setTimeout(() => clearInterval(waitForStream), 3000);
+                }
             }
+
+            renderRoomPage();
             subscribeToRoomMessages(roomId);
             await loadRooms();
         }
@@ -3005,7 +3006,6 @@
             } else {
                 document.getElementById('room-page').classList.remove('active');
             }
-            // Return to rooms list
             navigateTo('rooms');
         }
 
@@ -3024,7 +3024,6 @@
             const seats = room.seats || [];
             const online = seats.filter(s => s !== null).length;
             document.getElementById('room-online-display').textContent = '🟢 ' + online;
-            // Voice button
             const voiceBtn = document.getElementById('voice-toggle-btn');
             if (state.voiceActive) {
                 voiceBtn.textContent = state.isMuted ? '🔇 مكتوم' : '🎤 تحدث';
@@ -3033,7 +3032,6 @@
                 voiceBtn.textContent = '🎤 تشغيل';
                 voiceBtn.className = 'btn-voice';
             }
-            // Seats
             const grid = document.getElementById('seats-grid');
             grid.innerHTML = seats.map((userId, idx) => {
                 if (userId) {
@@ -3067,7 +3065,6 @@
                     </div>`;
                 }
             }).join('');
-            // Messages
             renderRoomMessages();
             setTimeout(() => {
                 const container = document.getElementById('chat-messages');
@@ -3207,8 +3204,9 @@
         }
 
         // ============================================================
-        // VOICE / WEBRTC
+        // VOICE / WEBRTC (محسّن بالكامل)
         // ============================================================
+
         async function startLocalVoice() {
             if (localStream) {
                 localStream.getTracks().forEach(t => t.enabled = true);
@@ -3218,26 +3216,45 @@
                 return;
             }
             try {
+                console.log('🎤 طلب الميكروفون...');
                 localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                console.log('🎤 تم الحصول على الميكروفون');
+
+                // إضافة التيار إلى الاتصالات الموجودة
                 for (const userId in peers) {
                     const pc = peers[userId];
                     localStream.getTracks().forEach(track => {
-                        try { pc.addTrack(track, localStream); } catch (e) {}
+                        try { pc.addTrack(track, localStream); } catch (e) { console.warn('خطأ في إضافة المسار:', e); }
                     });
                 }
+
+                // إعداد تحليل الصوت
                 audioContext = new(window.AudioContext || window.webkitAudioContext)();
                 const source = audioContext.createMediaStreamSource(localStream);
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 256;
                 source.connect(analyser);
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
+
                 state.voiceActive = true;
                 state.isMuted = false;
                 detectLocalVoice();
                 renderRoomPage();
                 showToast('🎤 تم تفعيل الميكروفون', 'success');
+
+                // بعد تفعيل الميكروفون، حاول الاتصال بالمستخدمين الموجودين
+                if (state.currentRoomId) {
+                    const room = state.rooms.find(r => r.id === state.currentRoomId);
+                    if (room) {
+                        const usersInRoom = room.seats?.filter(id => id !== null && id !== state.currentUser.id) || [];
+                        if (usersInRoom.length > 0) {
+                            await startCallWithUsers(usersInRoom);
+                        }
+                    }
+                }
             } catch (err) {
-                showToast('⚠️ لا يمكن الوصول إلى الميكروفون', 'error');
+                console.error('خطأ في الميكروفون:', err);
+                showToast('⚠️ لا يمكن الوصول إلى الميكروفون: ' + err.message, 'error');
             }
         }
 
@@ -3254,6 +3271,7 @@
             state.voiceActive = false;
             state.isMuted = false;
             renderRoomPage();
+            showToast('🔇 تم إيقاف الصوت', 'success');
         }
 
         function toggleMute() {
@@ -3293,6 +3311,10 @@
             animationFrame = requestAnimationFrame(detectLocalVoice);
         }
 
+        // ============================================================
+        // WEBRTC SIGNALING (محسّن)
+        // ============================================================
+
         async function createPeerConnection(targetUserId) {
             if (peers[targetUserId]) {
                 const s = peers[targetUserId].connectionState;
@@ -3302,11 +3324,13 @@
             }
             const pc = new RTCPeerConnection(rtcConfig);
             peers[targetUserId] = pc;
+
             if (localStream) {
                 localStream.getTracks().forEach(track => {
-                    try { pc.addTrack(track, localStream); } catch (e) {}
+                    try { pc.addTrack(track, localStream); } catch (e) { console.warn('خطأ في إضافة المسار:', e); }
                 });
             }
+
             pc.ontrack = (event) => {
                 if (event.streams && event.streams.length > 0) {
                     const audio = new Audio();
@@ -3314,46 +3338,66 @@
                     audio.autoplay = true;
                     audio.style.display = 'none';
                     document.body.appendChild(audio);
+                    console.log('🔊 استقبال صوت من:', targetUserId);
                     showToast('🎧 استقبال الصوت', 'success');
                 }
             };
+
             pc.onicecandidate = (event) => {
                 if (event.candidate) {
                     sendSignal(targetUserId, 'ice-candidate', event.candidate);
                 }
             };
+
             pc.onconnectionstatechange = () => {
+                console.log(`🔗 حالة الاتصال مع ${targetUserId}: ${pc.connectionState}`);
                 if (pc.connectionState === 'connected') {
                     showToast('✅ اتصال صوتي ناجح', 'success');
                 } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                    if (peers[targetUserId]) { peers[targetUserId].close();
-                        delete peers[targetUserId]; }
+                    if (peers[targetUserId]) {
+                        peers[targetUserId].close();
+                        delete peers[targetUserId];
+                    }
                 }
             };
+
+            pc.oniceconnectionstatechange = () => {
+                console.log(`🧊 ICE حالة: ${pc.iceConnectionState}`);
+            };
+
             return pc;
         }
 
         async function sendSignal(targetUserId, type, data) {
             if (!state.currentRoomId) return;
             try {
-                await supabase.from('signals').insert([{
+                const { error } = await supabase.from('signals').insert([{
                     room_id: state.currentRoomId,
                     sender_id: state.currentUser.id,
                     target_id: targetUserId,
                     type: type,
                     data: data
                 }]);
-            } catch (e) { console.error('خطأ في إرسال الإشارة:', e); }
+                if (error) throw error;
+                console.log(`📤 إشارة ${type} إلى ${targetUserId}`);
+            } catch (e) {
+                console.error('خطأ في إرسال الإشارة:', e);
+                showToast('⚠️ خطأ في إرسال إشارة الصوت', 'error');
+            }
         }
 
         async function startCallWithUsers(targetUserIds) {
             const targets = targetUserIds.filter(id => id !== state.currentUser.id && !peers[id]);
             if (targets.length === 0) return;
+
             if (!localStream) {
+                console.log('⏳ الميكروفون غير جاهز، ننتظر...');
                 await startLocalVoice();
+                // إعادة المحاولة بعد تفعيل الميكروفون
                 setTimeout(() => startCallWithUsers(targetUserIds), 500);
                 return;
             }
+
             for (const userId of targets) {
                 try {
                     const pc = await createPeerConnection(userId);
@@ -3361,7 +3405,9 @@
                         const offer = await pc.createOffer();
                         await pc.setLocalDescription(offer);
                         await sendSignal(userId, 'offer', offer);
+                        console.log(`📤 Offer إلى: ${userId}`);
                     } else {
+                        console.log(`⚠️ حالة الإشارة غير مستقرة: ${pc.signalingState}`);
                         setTimeout(() => {
                             if (peers[userId] && peers[userId].signalingState === 'stable') {
                                 pc.createOffer().then(offer => {
@@ -3371,7 +3417,9 @@
                             }
                         }, 1000);
                     }
-                } catch (e) { console.error(`خطأ في بدء المكالمة مع ${userId}:`, e); }
+                } catch (e) {
+                    console.error(`خطأ في بدء المكالمة مع ${userId}:`, e);
+                }
             }
         }
 
@@ -3379,25 +3427,41 @@
             const { sender_id, target_id, type, data } = payload.new;
             if (target_id !== state.currentUser.id || sender_id === state.currentUser.id) return;
             if (!state.currentRoomId || payload.new.room_id !== state.currentRoomId) return;
+
+            console.log(`📩 إشارة ${type} من ${sender_id}`);
             let pc = peers[sender_id];
+
             try {
                 if (!pc) pc = await createPeerConnection(sender_id);
+
                 if (type === 'offer') {
                     if (pc.signalingState === 'have-remote-offer') return;
                     await pc.setRemoteDescription(new RTCSessionDescription(data));
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer);
                     await sendSignal(sender_id, 'answer', answer);
+                    console.log(`📤 Answer إلى: ${sender_id}`);
                 } else if (type === 'answer') {
                     if (pc.signalingState === 'have-local-offer') {
                         await pc.setRemoteDescription(new RTCSessionDescription(data));
+                        console.log(`✅ Answer من: ${sender_id}`);
                     }
                 } else if (type === 'ice-candidate') {
                     if (pc.remoteDescription) {
                         await pc.addIceCandidate(new RTCIceCandidate(data));
+                        console.log(`🧊 ICE من: ${sender_id}`);
+                    } else {
+                        // تأخير لإضافة ICE بعد أن يصبح الوصف البعيد جاهزاً
+                        setTimeout(async () => {
+                            if (pc.remoteDescription) {
+                                await pc.addIceCandidate(new RTCIceCandidate(data));
+                            }
+                        }, 1000);
                     }
                 }
-            } catch (e) { console.error('خطأ في معالجة الإشارة:', e); }
+            } catch (e) {
+                console.error('خطأ في معالجة الإشارة:', e);
+            }
         }
 
         function closeAllPeerConnections() {
@@ -3405,6 +3469,7 @@
                 try { peers[userId].close(); } catch (e) {}
                 delete peers[userId];
             }
+            console.log('🔌 تم إغلاق جميع الاتصالات');
         }
 
         // ============================================================
@@ -3559,7 +3624,6 @@
             if (!state.messages[key]) state.messages[key] = [];
             state.messages[key].push(data);
             input.value = '';
-            // Re-render chat view
             const user = state.users.find(u => u.id === userId);
             if (user) {
                 document.querySelector('#chat-view-messages').innerHTML = renderChatMessagesHtml(user);
@@ -3568,7 +3632,6 @@
             }
             renderChats();
             updateBadges();
-            // Simulate reply
             if (Math.random() > 0.6) {
                 setTimeout(async () => {
                     const replies = ['رائع!', 'أوافق!', 'هاها 😂', 'بالتأكيد!', 'مذهل!', '👍'];
@@ -3801,7 +3864,6 @@
         function renderProfile() {
             const u = state.currentUser;
             if (!u) return;
-            // تحديث الصورة الشخصية مع الإطار الذهبي
             const avatarHtml = renderVerifiedAvatar(u, 'large');
             const avatarContainer = document.querySelector('.profile-avatar-wrapper .profile-avatar');
             if (avatarContainer) {
@@ -3952,7 +4014,7 @@
         function setupRealtimeSubscriptions() {
             state.subscriptions.forEach(sub => sub.unsubscribe());
             state.subscriptions = [];
-            // Rooms
+
             const roomsSub = supabase
                 .channel('rooms-channel')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, async () => {
@@ -3965,7 +4027,6 @@
                             state.currentRoom = room;
                             renderRoomPage();
                         } else {
-                            // Room deleted
                             if (state.voiceActive) stopLocalVoice();
                             state.currentRoomId = null;
                             state.currentRoom = null;
@@ -3976,13 +4037,13 @@
                 })
                 .subscribe();
             state.subscriptions.push(roomsSub);
-            // Signals
+
             const signalsSub = supabase
                 .channel('signals-channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'signals' }, handleIncomingSignal)
                 .subscribe();
             state.subscriptions.push(signalsSub);
-            // Users
+
             const usersSub = supabase
                 .channel('users-channel')
                 .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users' }, async (payload) => {
@@ -3997,7 +4058,7 @@
                 })
                 .subscribe();
             state.subscriptions.push(usersSub);
-            // Notifications
+
             const notifsSub = supabase
                 .channel('notifications-channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, payload => {
@@ -4011,7 +4072,7 @@
                 })
                 .subscribe();
             state.subscriptions.push(notifsSub);
-            // Private messages
+
             const msgsSub = supabase
                 .channel('messages-channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
