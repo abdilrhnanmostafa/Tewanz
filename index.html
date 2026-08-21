@@ -8,7 +8,7 @@
     </script>
     <style>
         /* ============================================================
-           RESET & ROOT
+           جميع الأنماط السابقة (نفس الكود مع إضافة مؤشر الحالة)
            ============================================================ */
         * {
             margin: 0;
@@ -2183,7 +2183,7 @@
             transform: rotate(180deg);
         }
 
-        /* ===== إضافة مؤشر حالة الصوت ===== */
+        /* ===== مؤشر حالة الصوت ===== */
         .voice-status {
             font-size: 12px;
             color: var(--text-secondary);
@@ -2599,7 +2599,7 @@
         };
 
         // ============================================================
-        // WEBRTC STATE (محسنة)
+        // WEBRTC STATE (نهائي ومحسّن)
         // ============================================================
         const peers = {};
         let localStream = null;
@@ -2608,7 +2608,7 @@
             dataArray = null,
             animationFrame = null;
 
-        // خوادم TURN/STUN موثوقة
+        // خوادم TURN/STUN موثوقة ومجانية
         const rtcConfig = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
@@ -2616,7 +2616,7 @@
                 { urls: 'stun:stun2.l.google.com:19302' },
                 { urls: 'stun:stun3.l.google.com:19302' },
                 { urls: 'stun:stun4.l.google.com:19302' },
-                // خوادم TURN مجانية من Metered (موثوقة)
+                // خوادم TURN مجانية من Metered (مضاعفة لتأمين الاتصال)
                 { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
                 { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
                 { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject',
@@ -2625,21 +2625,18 @@
         };
 
         // ============================================================
-        // WEBRTC FUNCTIONS (إصدار مبسط وقوي)
+        // WEBRTC FUNCTIONS (نهائية)
         // ============================================================
 
         // إنشاء اتصال مع مستخدم معين
         async function createPeerConnection(targetUserId) {
             // إذا كان اتصال موجود بالفعل وفي حالة جيدة، نرجعه
-            if (peers[targetUserId] && (peers[targetUserId].connectionState === 'connected' ||
-                    peers[targetUserId].connectionState === 'connecting' ||
-                    peers[targetUserId].connectionState === 'new' ||
-                    peers[targetUserId].connectionState === 'checking')) {
-                return peers[targetUserId];
-            }
-
-            // إذا كان اتصال موجوداً لكنه فاشل، نغلقه ونحذفه
             if (peers[targetUserId]) {
+                const state = peers[targetUserId].connectionState;
+                if (state === 'connected' || state === 'connecting' || state === 'new' || state === 'checking') {
+                    return peers[targetUserId];
+                }
+                // إذا كان في حالة فاشلة، نغلقه ونحذفه
                 peers[targetUserId].close();
                 delete peers[targetUserId];
             }
@@ -2650,23 +2647,27 @@
             // إضافة المسارات الصوتية المحلية (إذا كانت موجودة)
             if (localStream) {
                 localStream.getTracks().forEach(track => {
-                    pc.addTrack(track, localStream);
+                    try {
+                        pc.addTrack(track, localStream);
+                    } catch (e) {
+                        console.warn('خطأ في إضافة المسار:', e);
+                    }
                 });
+            } else {
+                console.warn('⚠️ لا يوجد تيار صوتي محلي لإضافته');
             }
 
             // استقبال الصوت من الطرف الآخر
             pc.ontrack = (event) => {
                 if (event.streams && event.streams.length > 0) {
-                    // إنشاء عنصر audio جديد لكل مستخدم
                     const audio = new Audio();
                     audio.srcObject = event.streams[0];
                     audio.autoplay = true;
                     audio.style.display = 'none';
-                    audio.volume = 1.0;
                     document.body.appendChild(audio);
                     const targetName = state.users.find(u => u.id === targetUserId)?.display_name || 'مستخدم';
-                    console.log(`🔊 استقبال صوت من: ${targetName} (${targetUserId})`);
-                    showToast(`🎧 تم استقبال الصوت من ${targetName}`, 'success');
+                    console.log(`🔊 استقبال صوت من: ${targetName}`);
+                    showToast(`🎧 استقبال الصوت من ${targetName}`, 'success');
                 }
             };
 
@@ -2679,11 +2680,11 @@
 
             // مراقبة حالة الاتصال
             pc.onconnectionstatechange = () => {
-                const state = pc.connectionState;
-                console.log(`🔗 حالة الاتصال مع ${targetUserId}: ${state}`);
-                if (state === 'connected') {
-                    showToast(`✅ اتصال صوتي ناجح مع المستخدم`, 'success');
-                } else if (state === 'failed' || state === 'disconnected') {
+                const s = pc.connectionState;
+                console.log(`🔗 حالة الاتصال مع ${targetUserId}: ${s}`);
+                if (s === 'connected') {
+                    showToast(`✅ اتصال صوتي مع المستخدم`, 'success');
+                } else if (s === 'failed' || s === 'disconnected') {
                     console.warn(`❌ انقطع الاتصال مع ${targetUserId}`);
                     if (peers[targetUserId]) {
                         peers[targetUserId].close();
@@ -2693,7 +2694,6 @@
                 }
             };
 
-            // مراقبة حالة ICE
             pc.oniceconnectionstatechange = () => {
                 console.log(`🧊 ICE حالة: ${pc.iceConnectionState}`);
             };
@@ -2705,16 +2705,18 @@
         async function sendSignal(targetUserId, type, data) {
             if (!state.currentRoomId) return;
             try {
-                await supabase.from('signals').insert([{
+                const { error } = await supabase.from('signals').insert([{
                     room_id: state.currentRoomId,
                     sender_id: state.currentUser.id,
                     target_id: targetUserId,
                     type: type,
                     data: data
                 }]);
+                if (error) throw error;
                 console.log(`📤 إشارة ${type} إلى ${targetUserId}`);
             } catch (e) {
                 console.error('خطأ في إرسال الإشارة:', e);
+                showToast('خطأ في إرسال إشارة الصوت', 'error');
             }
         }
 
@@ -2722,16 +2724,17 @@
         async function startCallWithUsers(targetUserIds) {
             const targets = targetUserIds.filter(id =>
                 id !== state.currentUser.id &&
-                !peers[id] // لا يوجد اتصال بالفعل
+                !peers[id]
             );
 
             if (targets.length === 0) return;
 
-            // تأكد من أن الميكروفون مفعل
+            // تأكد من وجود التيار الصوتي المحلي
             if (!localStream) {
+                console.log('⏳ الميكروفون غير جاهز، ننتظر...');
                 await startLocalVoice();
-                // إعادة المحاولة بعد تفعيل الميكروفون
-                setTimeout(() => startCallWithUsers(targetUserIds), 500);
+                // بعد تفعيل الميكروفون، نعيد المحاولة مع نفس المستخدمين
+                setTimeout(() => startCallWithUsers(targetUserIds), 300);
                 return;
             }
 
@@ -2752,7 +2755,7 @@
                                 pc.createOffer().then(offer => {
                                     pc.setLocalDescription(offer);
                                     sendSignal(userId, 'offer', offer);
-                                });
+                                }).catch(console.error);
                             }
                         }, 1000);
                     }
@@ -2773,7 +2776,7 @@
             let pc = peers[sender_id];
 
             try {
-                // تأكد من وجود اتصال
+                // تأكد من وجود اتصال (أنشئه إذا لم يكن موجوداً)
                 if (!pc) {
                     pc = await createPeerConnection(sender_id);
                 }
@@ -2802,11 +2805,19 @@
                             console.log(`🧊 ICE من: ${sender_id}`);
                         } else {
                             console.log(`⏳ انتظار الوصف البعيد لإضافة ICE`);
-                            setTimeout(async () => {
+                            // أضف ICE بعد أن يصبح الوصف البعيد جاهزاً
+                            const waitForRemote = setInterval(async () => {
                                 if (pc.remoteDescription) {
-                                    await pc.addIceCandidate(new RTCIceCandidate(data));
+                                    clearInterval(waitForRemote);
+                                    try {
+                                        await pc.addIceCandidate(new RTCIceCandidate(data));
+                                        console.log(`🧊 ICE (متأخر) من: ${sender_id}`);
+                                    } catch (e) {
+                                        console.error('خطأ في ICE المتأخر:', e);
+                                    }
                                 }
-                            }, 500);
+                            }, 200);
+                            setTimeout(() => clearInterval(waitForRemote), 5000);
                         }
                     } catch (e) {
                         console.error('خطأ في ICE:', e);
@@ -2829,7 +2840,7 @@
         }
 
         // ============================================================
-        // VOICE FUNCTIONS (محسنة مع إعادة محاولة)
+        // VOICE FUNCTIONS (نهائية)
         // ============================================================
 
         async function startLocalVoice() {
@@ -2855,7 +2866,7 @@
                         try {
                             pc.addTrack(track, localStream);
                         } catch (e) {
-                            console.warn('خطأ في إضافة المسار:', e);
+                            console.warn('خطأ في إضافة المسار إلى اتصال موجود:', e);
                         }
                     });
                 }
@@ -2875,12 +2886,13 @@
                 showToast('🎤 تم تفعيل الميكروفون', 'success');
                 renderRooms();
 
-                // بعد تفعيل الميكروفون، حاول الاتصال بالمستخدمين الموجودين
+                // بعد تفعيل الميكروفون، حاول الاتصال بالمستخدمين الموجودين في الغرفة
                 if (state.currentRoomId) {
                     const room = state.rooms.find(r => r.id === state.currentRoomId);
                     if (room) {
                         const usersInRoom = room.seats?.filter(id => id !== null && id !== state.currentUser.id) || [];
                         if (usersInRoom.length > 0) {
+                            console.log('🔄 بدء الاتصال بالمستخدمين الموجودين بعد تفعيل الميكروفون');
                             await startCallWithUsers(usersInRoom);
                         }
                     }
@@ -3034,7 +3046,7 @@
         }
 
         // ============================================================
-        // SCREEN MANAGEMENT
+        // SCREEN MANAGEMENT (نفس الكود السابق)
         // ============================================================
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -3121,7 +3133,7 @@
         }
 
         // ============================================================
-        // AUTH HANDLERS
+        // AUTH HANDLERS (نفس الكود السابق)
         // ============================================================
         async function handleLogin() {
             const email = document.getElementById('login-email').value.trim();
@@ -3487,7 +3499,7 @@
         }
 
         // ============================================================
-        // LOAD DATA & REALTIME (محسنة)
+        // LOAD DATA & REALTIME (محسّن)
         // ============================================================
 
         async function loadAllData() {
@@ -3553,7 +3565,7 @@
             renderCurrentPage();
         }
 
-        // تحديث الغرف مع إعادة الاتصال الصوتي
+        // تحديث الغرف وإعادة الاتصال الصوتي
         async function refreshRooms() {
             const { data: roomsData, error } = await supabase
                 .from('rooms')
@@ -3567,7 +3579,7 @@
                 }));
                 console.log('🔄 تم تحديث الغرف:', state.rooms.length);
 
-                // إذا كنا في غرفة، تأكد من الاتصال بالمستخدمين
+                // إدارة الاتصالات الصوتية
                 if (state.currentRoomId) {
                     const room = state.rooms.find(r => r.id === state.currentRoomId);
                     if (room) {
@@ -3575,7 +3587,7 @@
                         const myId = state.currentUser.id;
                         const others = currentUsers.filter(id => id !== myId);
 
-                        // إزالة الاتصالات لأشخاص ليسوا في الغرفة
+                        // إزالة الاتصالات لأشخاص غير موجودين في الغرفة
                         const extra = Object.keys(peers).filter(id => !others.includes(id));
                         for (const id of extra) {
                             if (peers[id]) {
@@ -3589,13 +3601,18 @@
                         const missing = others.filter(id => !peers[id]);
                         if (missing.length > 0) {
                             console.log('🔄 بدء الاتصال بالمستخدمين الجدد:', missing);
-                            // تأكد من أن الميكروفون مفعل
                             if (!localStream) {
                                 await startLocalVoice();
                             }
                             await startCallWithUsers(missing);
                         }
+                    } else {
+                        // الغرفة غير موجودة (ربما تم حذفها)، نغلق الصوت
+                        if (state.voiceActive) stopLocalVoice();
                     }
+                } else {
+                    // لسنا في غرفة، نغلق الصوت إذا كان مفعلاً
+                    if (state.voiceActive) stopLocalVoice();
                 }
 
                 if (state.currentTab === 'rooms') renderRooms();
@@ -3684,7 +3701,7 @@
         }
 
         // ============================================================
-        // ROOM FUNCTIONS
+        // ROOM FUNCTIONS (نفس الكود السابق)
         // ============================================================
 
         function showCreateRoomModal() {
@@ -3975,7 +3992,7 @@
         }
 
         // ============================================================
-        // RENDER FUNCTIONS (مع مؤشر الصوت)
+        // RENDER FUNCTIONS (مع مؤشرات الصوت)
         // ============================================================
 
         function renderHome() {
@@ -4333,7 +4350,7 @@
         });
 
         // ============================================================
-        // FRIENDS
+        // FRIENDS (نفس الكود السابق)
         // ============================================================
         function renderFriends(filter) {
             const list = document.getElementById('friends-list');
@@ -4520,7 +4537,7 @@
         }
 
         // ============================================================
-        // GIFT SYSTEM
+        // GIFT SYSTEM (نفس الكود السابق)
         // ============================================================
         async function sendGiftToUser(userId, giftEmoji) {
             if (!userId) { showToast('اختر مستخدم أولاً', 'error'); return; }
@@ -4619,7 +4636,7 @@
         }
 
         // ============================================================
-        // PROFILE
+        // PROFILE (نفس الكود السابق)
         // ============================================================
         function renderProfile() {
             const u = state.currentUser;
@@ -4673,7 +4690,7 @@
         }
 
         // ============================================================
-        // NOTIFICATIONS
+        // NOTIFICATIONS (نفس الكود السابق)
         // ============================================================
         function renderNotifications() {
             const list = document.getElementById('notifications-list');
@@ -4704,7 +4721,7 @@
         }
 
         // ============================================================
-        // SEARCH
+        // SEARCH (نفس الكود السابق)
         // ============================================================
         function toggleSearch() {
             const bar = document.getElementById('search-bar');
@@ -4758,7 +4775,7 @@
         }
 
         // ============================================================
-        // SETTINGS
+        // SETTINGS (نفس الكود السابق)
         // ============================================================
         function toggleDarkMode() {
             state.darkMode = !state.darkMode;
@@ -4813,7 +4830,7 @@
             }
             showScreen('screen-login');
             document.getElementById('dark-toggle').classList.add('active');
-            console.log('🎙️ توينز · Twins — النسخة النهائية مع WebRTC محسّن');
+            console.log('🎙️ توينز · Twins — النسخة النهائية مع حل مشكلة الصوت');
         }
 
         document.addEventListener('DOMContentLoaded', init);
