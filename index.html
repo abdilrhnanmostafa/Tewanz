@@ -8,7 +8,7 @@
     </script>
     <style>
         /* ============================================================
-           RESET & ROOT (نفس الكود السابق)
+           جميع الأنماط السابقة (نفس الكود) مع إضافة CSS للصوت
            ============================================================ */
         * {
             margin: 0;
@@ -79,7 +79,6 @@
             overflow: hidden;
             position: relative;
         }
-        /* ===== جميع الأنماط السابقة ===== */
         .status-bar {
             padding: 4px 20px 4px 16px;
             display: flex;
@@ -181,8 +180,6 @@
                 opacity: 0.6;
             }
         }
-
-        /* AUTH */
         .auth-screen {
             display: flex;
             justify-content: center;
@@ -303,8 +300,6 @@
             background: var(--border-glass);
             content: '';
         }
-
-        /* MAIN SCREENS */
         .screen-content {
             flex: 1;
             overflow-y: auto;
@@ -320,8 +315,6 @@
         .page.active {
             display: block;
         }
-
-        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -391,8 +384,6 @@
             border: 2px solid var(--bg-primary);
             box-shadow: 0 2px 12px rgba(236, 72, 153, 0.35);
         }
-
-        /* HOME */
         .home-header {
             display: flex;
             justify-content: space-between;
@@ -591,8 +582,6 @@
             margin-top: 3px;
             font-weight: 600;
         }
-
-        /* ROOMS LIST */
         .rooms-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -674,8 +663,6 @@
             transform: translateX(-50%) scale(1.04);
             box-shadow: 0 8px 48px rgba(124, 58, 237, 0.5);
         }
-
-        /* ROOM PAGE */
         #room-page {
             display: none;
             flex-direction: column;
@@ -929,8 +916,6 @@
         .seat-item .seat-actions .btn-ban {
             color: #EF4444;
         }
-
-        /* CHAT SECTION IN ROOM */
         .chat-section {
             flex: 1;
             display: flex;
@@ -1111,8 +1096,6 @@
             background: rgba(124, 58, 237, 0.15);
             transform: scale(1.2);
         }
-
-        /* CHATS (private) */
         .chat-list .chat-item {
             display: flex;
             align-items: center;
@@ -1188,8 +1171,6 @@
             min-width: 20px;
             text-align: center;
         }
-
-        /* FRIENDS */
         .friend-item {
             display: flex;
             align-items: center;
@@ -1313,8 +1294,6 @@
             background: rgba(124, 58, 237, 0.08);
             color: var(--text-primary);
         }
-
-        /* PROFILE */
         .profile-card {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
@@ -1535,8 +1514,6 @@
             border-color: #EF4444;
             color: #EF4444;
         }
-
-        /* SETTINGS */
         .settings-item {
             display: flex;
             align-items: center;
@@ -1597,8 +1574,6 @@
         .settings-item .toggle.active::after {
             left: 22px;
         }
-
-        /* NOTIFICATIONS */
         .notif-item {
             display: flex;
             align-items: center;
@@ -1643,8 +1618,6 @@
             border-radius: 50%;
             flex-shrink: 0;
         }
-
-        /* TOAST & MODAL */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -1815,9 +1788,7 @@
             box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
         }
 
-        /* ============================================================
-           الإطار الذهبي المتوهج للمستخدمين الموثقين
-           ============================================================ */
+        /* الإطار الذهبي */
         .verified-avatar-wrapper {
             position: relative;
             display: inline-block;
@@ -1917,7 +1888,6 @@
             inset: 3px;
         }
 
-        /* RESPONSIVE */
         @media (max-width: 480px) {
             .seats-grid {
                 grid-template-columns: repeat(4, 1fr);
@@ -2092,7 +2062,7 @@
             </div>
         </div>
 
-        <!-- ===== MAIN APP (بعد تسجيل الدخول) ===== -->
+        <!-- ===== MAIN APP ===== -->
         <div id="screen-main" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
             <div class="screen-content" id="main-content">
                 <!-- HOME -->
@@ -2135,7 +2105,7 @@
                     <div class="rooms-grid" id="rooms-grid"></div>
                 </div>
 
-                <!-- CHATS (المحادثات الخاصة) -->
+                <!-- CHATS -->
                 <div id="page-chats" class="page">
                     <div class="section-title"><h3>💬 المحادثات الخاصة</h3></div>
                     <div class="chat-list" id="chat-list"></div>
@@ -2255,7 +2225,7 @@
             </nav>
         </div>
 
-        <!-- ===== ROOM PAGE (يظهر فوق الكل عند الدخول إلى غرفة) ===== -->
+        <!-- ===== ROOM PAGE ===== -->
         <div id="room-page">
             <div class="room-header">
                 <button class="back-btn" onclick="leaveRoomAndGoBack()">←</button>
@@ -2332,6 +2302,7 @@
             currentTab: 'home',
             isLoggedIn: false,
             darkMode: true,
+            // Room state
             currentRoomId: null,
             currentRoom: null,
             seatIndex: -1,
@@ -2343,7 +2314,7 @@
         };
 
         // ============================================================
-        // WEBRTC STATE (محسّن)
+        // WEBRTC STATE (محسّن بالكامل)
         // ============================================================
         const peers = {};
         let localStream = null;
@@ -2352,7 +2323,7 @@
             dataArray = null,
             animationFrame = null;
 
-        // خوادم TURN/STUN موثوقة
+        // استخدام خوادم STUN/TURN متعددة ومجانية
         const rtcConfig = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
@@ -2360,6 +2331,9 @@
                 { urls: 'stun:stun2.l.google.com:19302' },
                 { urls: 'stun:stun3.l.google.com:19302' },
                 { urls: 'stun:stun4.l.google.com:19302' },
+                { urls: 'stun:stun.12connect.com' },
+                { urls: 'stun:stun.voipstunt.com' },
+                // TURN من Metered (موثوق)
                 { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
                 { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
                 { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject',
@@ -2407,7 +2381,9 @@
 
         function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
+        // ============================================================
         // دالة عرض الصورة مع الإطار الذهبي
+        // ============================================================
         function renderVerifiedAvatar(user, size = 'default', className = '', content = '') {
             if (!user) return '';
             const avatar = content || user.avatar || '👤';
@@ -2956,28 +2932,21 @@
             state.seatIndex = emptyIndex;
             showToast(`جلست على المقعد ${emptyIndex+1}`, 'success');
 
-            // ===== START VOICE =====
+            // تشغيل الصوت
             await startLocalVoice();
 
-            // ===== START CALL WITH OTHER USERS =====
+            // تحديث واجهة الغرفة
+            renderRoomPage();
+
+            // بدء الاتصال بالمستخدمين الآخرين (بعد تأخير قصير للتأكد من أن التيار المحلي جاهز)
             const otherUsers = seats.filter(id => id !== null && id !== state.currentUser.id);
             if (otherUsers.length > 0) {
-                // تأكد من أن التيار الصوتي جاهز قبل بدء المكالمات
-                if (localStream) {
+                setTimeout(async () => {
                     await startCallWithUsers(otherUsers);
-                } else {
-                    // انتظر حتى يصبح التيار جاهزاً
-                    const waitForStream = setInterval(async () => {
-                        if (localStream) {
-                            clearInterval(waitForStream);
-                            await startCallWithUsers(otherUsers);
-                        }
-                    }, 300);
-                    setTimeout(() => clearInterval(waitForStream), 3000);
-                }
+                }, 500);
             }
 
-            renderRoomPage();
+            // الاشتراك في رسائل الغرفة
             subscribeToRoomMessages(roomId);
             await loadRooms();
         }
@@ -3024,6 +2993,7 @@
             const seats = room.seats || [];
             const online = seats.filter(s => s !== null).length;
             document.getElementById('room-online-display').textContent = '🟢 ' + online;
+
             const voiceBtn = document.getElementById('voice-toggle-btn');
             if (state.voiceActive) {
                 voiceBtn.textContent = state.isMuted ? '🔇 مكتوم' : '🎤 تحدث';
@@ -3032,6 +3002,7 @@
                 voiceBtn.textContent = '🎤 تشغيل';
                 voiceBtn.className = 'btn-voice';
             }
+
             const grid = document.getElementById('seats-grid');
             grid.innerHTML = seats.map((userId, idx) => {
                 if (userId) {
@@ -3204,7 +3175,7 @@
         }
 
         // ============================================================
-        // VOICE / WEBRTC (محسّن بالكامل)
+        // WEBRTC / VOICE (محسّن بالكامل)
         // ============================================================
 
         async function startLocalVoice() {
@@ -3224,11 +3195,11 @@
                 for (const userId in peers) {
                     const pc = peers[userId];
                     localStream.getTracks().forEach(track => {
-                        try { pc.addTrack(track, localStream); } catch (e) { console.warn('خطأ في إضافة المسار:', e); }
+                        try { pc.addTrack(track, localStream); } catch (e) {}
                     });
                 }
 
-                // إعداد تحليل الصوت
+                // إعداد تحليل الصوت (للمؤشر)
                 audioContext = new(window.AudioContext || window.webkitAudioContext)();
                 const source = audioContext.createMediaStreamSource(localStream);
                 analyser = audioContext.createAnalyser();
@@ -3241,17 +3212,6 @@
                 detectLocalVoice();
                 renderRoomPage();
                 showToast('🎤 تم تفعيل الميكروفون', 'success');
-
-                // بعد تفعيل الميكروفون، حاول الاتصال بالمستخدمين الموجودين
-                if (state.currentRoomId) {
-                    const room = state.rooms.find(r => r.id === state.currentRoomId);
-                    if (room) {
-                        const usersInRoom = room.seats?.filter(id => id !== null && id !== state.currentUser.id) || [];
-                        if (usersInRoom.length > 0) {
-                            await startCallWithUsers(usersInRoom);
-                        }
-                    }
-                }
             } catch (err) {
                 console.error('خطأ في الميكروفون:', err);
                 showToast('⚠️ لا يمكن الوصول إلى الميكروفون: ' + err.message, 'error');
@@ -3271,7 +3231,6 @@
             state.voiceActive = false;
             state.isMuted = false;
             renderRoomPage();
-            showToast('🔇 تم إيقاف الصوت', 'success');
         }
 
         function toggleMute() {
@@ -3312,25 +3271,32 @@
         }
 
         // ============================================================
-        // WEBRTC SIGNALING (محسّن)
+        // WEBRTC Signaling (مع إعادة محاولة قوية)
         // ============================================================
 
         async function createPeerConnection(targetUserId) {
+            // التحقق من وجود اتصال سليم
             if (peers[targetUserId]) {
                 const s = peers[targetUserId].connectionState;
-                if (s === 'connected' || s === 'connecting' || s === 'new' || s === 'checking') return peers[targetUserId];
+                if (s === 'connected' || s === 'connecting' || s === 'new' || s === 'checking') {
+                    return peers[targetUserId];
+                }
+                // إذا كان فاشلاً، نغلقه ونحذفه
                 peers[targetUserId].close();
                 delete peers[targetUserId];
             }
+
             const pc = new RTCPeerConnection(rtcConfig);
             peers[targetUserId] = pc;
 
+            // إضافة المسارات المحلية
             if (localStream) {
                 localStream.getTracks().forEach(track => {
-                    try { pc.addTrack(track, localStream); } catch (e) { console.warn('خطأ في إضافة المسار:', e); }
+                    try { pc.addTrack(track, localStream); } catch (e) {}
                 });
             }
 
+            // استقبال الصوت
             pc.ontrack = (event) => {
                 if (event.streams && event.streams.length > 0) {
                     const audio = new Audio();
@@ -3338,29 +3304,35 @@
                     audio.autoplay = true;
                     audio.style.display = 'none';
                     document.body.appendChild(audio);
-                    console.log('🔊 استقبال صوت من:', targetUserId);
-                    showToast('🎧 استقبال الصوت', 'success');
+                    const name = state.users.find(u => u.id === targetUserId)?.display_name || 'مستخدم';
+                    console.log(`🔊 استقبال صوت من: ${name}`);
+                    showToast(`🎧 استقبال الصوت من ${name}`, 'success');
                 }
             };
 
+            // إرسال المرشحات
             pc.onicecandidate = (event) => {
                 if (event.candidate) {
                     sendSignal(targetUserId, 'ice-candidate', event.candidate);
                 }
             };
 
+            // مراقبة الحالة
             pc.onconnectionstatechange = () => {
                 console.log(`🔗 حالة الاتصال مع ${targetUserId}: ${pc.connectionState}`);
                 if (pc.connectionState === 'connected') {
-                    showToast('✅ اتصال صوتي ناجح', 'success');
+                    showToast(`✅ اتصال صوتي مع المستخدم`, 'success');
                 } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+                    console.warn(`❌ انقطع الاتصال مع ${targetUserId}`);
                     if (peers[targetUserId]) {
                         peers[targetUserId].close();
                         delete peers[targetUserId];
                     }
+                    showToast(`⚠️ انقطع الاتصال الصوتي`, 'error');
                 }
             };
 
+            // مراقبة ICE
             pc.oniceconnectionstatechange = () => {
                 console.log(`🧊 ICE حالة: ${pc.iceConnectionState}`);
             };
@@ -3371,18 +3343,16 @@
         async function sendSignal(targetUserId, type, data) {
             if (!state.currentRoomId) return;
             try {
-                const { error } = await supabase.from('signals').insert([{
+                await supabase.from('signals').insert([{
                     room_id: state.currentRoomId,
                     sender_id: state.currentUser.id,
                     target_id: targetUserId,
                     type: type,
                     data: data
                 }]);
-                if (error) throw error;
                 console.log(`📤 إشارة ${type} إلى ${targetUserId}`);
             } catch (e) {
                 console.error('خطأ في إرسال الإشارة:', e);
-                showToast('⚠️ خطأ في إرسال إشارة الصوت', 'error');
             }
         }
 
@@ -3390,8 +3360,9 @@
             const targets = targetUserIds.filter(id => id !== state.currentUser.id && !peers[id]);
             if (targets.length === 0) return;
 
+            // تأكد من وجود التيار المحلي
             if (!localStream) {
-                console.log('⏳ الميكروفون غير جاهز، ننتظر...');
+                console.log('⏳ انتظار الميكروفون...');
                 await startLocalVoice();
                 // إعادة المحاولة بعد تفعيل الميكروفون
                 setTimeout(() => startCallWithUsers(targetUserIds), 500);
@@ -3408,12 +3379,12 @@
                         console.log(`📤 Offer إلى: ${userId}`);
                     } else {
                         console.log(`⚠️ حالة الإشارة غير مستقرة: ${pc.signalingState}`);
-                        setTimeout(() => {
+                        // إعادة المحاولة بعد تأخير
+                        setTimeout(async () => {
                             if (peers[userId] && peers[userId].signalingState === 'stable') {
-                                pc.createOffer().then(offer => {
-                                    pc.setLocalDescription(offer);
-                                    sendSignal(userId, 'offer', offer);
-                                }).catch(console.error);
+                                const offer = await peers[userId].createOffer();
+                                await peers[userId].setLocalDescription(offer);
+                                await sendSignal(userId, 'offer', offer);
                             }
                         }, 1000);
                     }
@@ -3429,13 +3400,20 @@
             if (!state.currentRoomId || payload.new.room_id !== state.currentRoomId) return;
 
             console.log(`📩 إشارة ${type} من ${sender_id}`);
+
             let pc = peers[sender_id];
 
             try {
-                if (!pc) pc = await createPeerConnection(sender_id);
+                // إنشاء اتصال إذا لم يكن موجوداً
+                if (!pc) {
+                    pc = await createPeerConnection(sender_id);
+                }
 
                 if (type === 'offer') {
-                    if (pc.signalingState === 'have-remote-offer') return;
+                    if (pc.signalingState === 'have-remote-offer') {
+                        console.log('⚠️ تجاهل Offer مكرر');
+                        return;
+                    }
                     await pc.setRemoteDescription(new RTCSessionDescription(data));
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer);
@@ -3445,16 +3423,25 @@
                     if (pc.signalingState === 'have-local-offer') {
                         await pc.setRemoteDescription(new RTCSessionDescription(data));
                         console.log(`✅ Answer من: ${sender_id}`);
+                    } else {
+                        console.log(`⚠️ حالة غير مناسبة لـ Answer: ${pc.signalingState}`);
                     }
                 } else if (type === 'ice-candidate') {
                     if (pc.remoteDescription) {
-                        await pc.addIceCandidate(new RTCIceCandidate(data));
-                        console.log(`🧊 ICE من: ${sender_id}`);
+                        try {
+                            await pc.addIceCandidate(new RTCIceCandidate(data));
+                            console.log(`🧊 ICE من: ${sender_id}`);
+                        } catch (e) {
+                            console.error('خطأ في ICE:', e);
+                        }
                     } else {
-                        // تأخير لإضافة ICE بعد أن يصبح الوصف البعيد جاهزاً
+                        // تأجيل إضافة المرشح حتى يتوفر الوصف البعيد
                         setTimeout(async () => {
                             if (pc.remoteDescription) {
-                                await pc.addIceCandidate(new RTCIceCandidate(data));
+                                try {
+                                    await pc.addIceCandidate(new RTCIceCandidate(data));
+                                    console.log(`🧊 ICE (متأخر) من: ${sender_id}`);
+                                } catch (e) {}
                             }
                         }, 1000);
                     }
@@ -3541,7 +3528,7 @@
         }
 
         // ============================================================
-        // CHATS (المحادثات الخاصة)
+        // CHATS
         // ============================================================
         function renderChats() {
             const list = document.getElementById('chat-list');
@@ -4015,6 +4002,7 @@
             state.subscriptions.forEach(sub => sub.unsubscribe());
             state.subscriptions = [];
 
+            // Rooms
             const roomsSub = supabase
                 .channel('rooms-channel')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, async () => {
@@ -4038,12 +4026,14 @@
                 .subscribe();
             state.subscriptions.push(roomsSub);
 
+            // Signals
             const signalsSub = supabase
                 .channel('signals-channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'signals' }, handleIncomingSignal)
                 .subscribe();
             state.subscriptions.push(signalsSub);
 
+            // Users
             const usersSub = supabase
                 .channel('users-channel')
                 .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users' }, async (payload) => {
@@ -4059,6 +4049,7 @@
                 .subscribe();
             state.subscriptions.push(usersSub);
 
+            // Notifications
             const notifsSub = supabase
                 .channel('notifications-channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, payload => {
@@ -4073,6 +4064,7 @@
                 .subscribe();
             state.subscriptions.push(notifsSub);
 
+            // Private messages
             const msgsSub = supabase
                 .channel('messages-channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
