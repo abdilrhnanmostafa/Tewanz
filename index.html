@@ -9,7 +9,7 @@
     </script>
     <style>
         /* ============================================================
-           CSS
+           CSS مختصر (نفس الأنماط السابقة مع بعض التعديلات)
            ============================================================ */
         :root {
             --primary: #6C3CE1;
@@ -64,7 +64,7 @@
             display: flex;
             flex-direction: column;
         }
-        @media (min-width:768px) {
+        @media (min-width: 768px) {
             #app {
                 border-radius: 36px;
                 height: 92vh;
@@ -112,7 +112,7 @@
         }
 
         /* ============================================================
-           AUTH
+           AUTH (نفس السابق)
            ============================================================ */
         #splash {
             background: var(--bg);
@@ -1035,7 +1035,7 @@
         }
 
         /* ============================================================
-           ROOM DETAIL
+           ROOM DETAIL (مع واجهة الصوت)
            ============================================================ */
         .room-detail-page {
             position: absolute;
@@ -1263,6 +1263,7 @@
             box-shadow: 0 0 30px rgba(108, 60, 225, 0.3);
         }
 
+        /* Voice controls */
         .rd-voice-control {
             background: rgba(255, 255, 255, 0.04);
             border-radius: var(--radius-sm);
@@ -1364,7 +1365,6 @@
             background: linear-gradient(90deg, #EC4899, #F59E0B);
         }
 
-        /* Admin tools */
         .rd-admin-tools {
             background: rgba(255, 255, 255, 0.03);
             border-radius: var(--radius-sm);
@@ -2641,7 +2641,7 @@
         .hidden {
             display: none !important;
         }
-        @media (max-width:360px) {
+        @media (max-width: 360px) {
             .room-card .seat {
                 min-height: 44px;
             }
@@ -2656,7 +2656,7 @@
                 font-size: 18px;
             }
         }
-        @supports (padding:max(0px)) {
+        @supports (padding: max(0px)) {
             .bottom-nav {
                 padding-bottom: max(8px, var(--safe-bottom));
             }
@@ -2678,9 +2678,16 @@
             }
         }
 
+        /* ============================================================
+           ملفات الإدخال المخفية
+           ============================================================ */
         .file-input-hidden {
             display: none;
         }
+
+        /* ============================================================
+           Favorites tab empty
+           ============================================================ */
         .fav-empty {
             text-align: center;
             padding: 40px 20px;
@@ -2693,6 +2700,9 @@
             margin-bottom: 12px;
         }
 
+        /* ============================================================
+           Modal
+           ============================================================ */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -2813,7 +2823,7 @@
         <canvas id="particles-canvas"></canvas>
         <div class="toast-container" id="toastContainer"></div>
 
-        <!-- ===== SPLASH ===== -->
+        <!-- ========== SPLASH / AUTH ========== -->
         <div class="screen active no-nav" id="splash">
             <div class="bg-orb"></div>
             <div class="bg-orb"></div>
@@ -2894,7 +2904,7 @@
             </div>
         </div>
 
-        <!-- ===== MAIN FEED ===== -->
+        <!-- ========== MAIN FEED ========== -->
         <div class="screen" id="mainScreen">
             <div class="top-header">
                 <span class="app-title"><i class="fas fa-heart"></i> توينز</span>
@@ -2917,7 +2927,7 @@
             </div>
         </div>
 
-        <!-- ===== VOICE ROOMS ===== -->
+        <!-- ========== VOICE ROOMS ========== -->
         <div class="screen" id="roomsScreen">
             <div class="top-header">
                 <span class="app-title"><i class="fas fa-microphone-alt"></i> الغرف الصوتية</span>
@@ -2935,7 +2945,7 @@
             </div>
         </div>
 
-        <!-- ===== ROOM DETAIL ===== -->
+        <!-- ========== ROOM DETAIL (مع الصوت) ========== -->
         <div class="room-detail-page" id="roomDetailPage">
             <div class="rd-bg" id="rdBg"></div>
             <div class="rd-bg-overlay"></div>
@@ -2955,6 +2965,8 @@
                     <span class="rd-occupants-count" id="rdPageOccupants">0/8 متصلون</span>
                 </div>
                 <div class="rd-seats-grid" id="rdPageSeats"></div>
+
+                <!-- Voice Controls -->
                 <div class="rd-voice-control" id="voiceControl">
                     <div class="vc-status">
                         <span class="vc-dot" id="vcDot"></span>
@@ -2966,10 +2978,14 @@
                     <button class="vc-btn" id="vcToggleBtn"><i class="fas fa-microphone-slash"></i> تفعيل</button>
                     <button class="vc-btn" id="vcMuteBtn"><i class="fas fa-volume-up"></i> كتم</button>
                 </div>
+
+                <!-- Admin Tools -->
                 <div class="rd-admin-tools" id="rdAdminTools" style="display:none;">
                     <div class="at-title"><i class="fas fa-shield-alt"></i> أدوات المشرف</div>
                     <div class="at-buttons" id="rdAdminButtons"></div>
                 </div>
+
+                <!-- Music Player -->
                 <div class="rd-music-player" id="rdMusicPlayer">
                     <div class="mp-top">
                         <div class="mp-cover"><i class="fas fa-music"></i></div>
@@ -2995,6 +3011,7 @@
                     <button class="mp-file-btn" id="mpFileBtn"><i class="fas fa-folder-open"></i> اختر من هاتفي</button>
                     <input type="file" class="mp-file-input" id="mpFileInput" accept="audio/*" />
                 </div>
+
                 <div class="rd-chat-section">
                     <div class="rd-chat-msgs" id="rdPageMessages"></div>
                     <div class="rd-chat-input">
@@ -3005,7 +3022,7 @@
             </div>
         </div>
 
-        <!-- ===== CHAT LIST ===== -->
+        <!-- ========== CHAT LIST ========== -->
         <div class="screen" id="chatScreen">
             <div class="top-header">
                 <span class="app-title"><i class="fas fa-comment-dots"></i> الشات</span>
@@ -3017,12 +3034,12 @@
             <div class="chat-list" id="chatListContainer"><div id="chatList"><div class="loading-shimmer"></div><div class="loading-shimmer"></div></div></div>
         </div>
 
-        <!-- ===== PROFILE ===== -->
+        <!-- ========== PROFILE ========== -->
         <div class="screen" id="profileScreen">
             <div class="profile-main" id="profileMainContainer"></div>
         </div>
 
-        <!-- ===== CHAT DETAIL ===== -->
+        <!-- ========== CHAT DETAIL ========== -->
         <div class="chat-detail-overlay" id="chatDetailOverlay">
             <div class="chat-detail-header">
                 <button class="back-btn" id="chatDetailBack"><i class="fas fa-arrow-right"></i></button>
@@ -3054,7 +3071,7 @@
             </div>
         </div>
 
-        <!-- ===== NOTIFICATIONS ===== -->
+        <!-- ========== NOTIFICATIONS ========== -->
         <div class="notif-overlay" id="notifOverlay">
             <div class="notif-sheet">
                 <div class="notif-header"><h3>الإشعارات</h3><button class="close-notif" id="notifClose"><i class="fas fa-times"></i></button></div>
@@ -3062,7 +3079,7 @@
             </div>
         </div>
 
-        <!-- ===== SEARCH ===== -->
+        <!-- ========== SEARCH ========== -->
         <div class="search-overlay" id="searchOverlay">
             <div class="search-top">
                 <button class="close-search" id="searchClose"><i class="fas fa-times"></i></button>
@@ -3071,7 +3088,7 @@
             <div class="search-results" id="searchResults"></div>
         </div>
 
-        <!-- ===== BOTTOM NAV ===== -->
+        <!-- ========== BOTTOM NAV ========== -->
         <div class="bottom-nav" id="bottomNav">
             <button class="nav-item active" data-screen="mainScreen"><i class="fas fa-home"></i><span>الرئيسية</span></button>
             <button class="nav-item" data-screen="roomsScreen"><i class="fas fa-microphone-alt"></i><span>الغرف</span></button>
@@ -3079,12 +3096,12 @@
             <button class="nav-item" data-screen="profileScreen"><i class="fas fa-user"></i><span>الملف</span></button>
         </div>
 
-        <!-- ===== Hidden inputs ===== -->
+        <!-- ========== ملفات الإدخال المخفية ========== -->
         <input type="file" id="avatarFileInput" class="file-input-hidden" accept="image/*" />
         <input type="file" id="coverFileInput" class="file-input-hidden" accept="image/*" />
         <input type="file" id="roomCoverInput" class="file-input-hidden" accept="image/*" />
 
-        <!-- ===== Modal ===== -->
+        <!-- ========== MODAL ========== -->
         <div class="modal-overlay" id="settingsModal">
             <div class="modal-box">
                 <button class="modal-close" id="settingsModalClose">✕</button>
@@ -3095,21 +3112,97 @@
 
     <script>
         // ============================================================
-        // توينز — التطبيق الكامل مع دعم كامل لوظائف لوحة التحكم
+        // توينز — التطبيق الكامل (مع الصوت والشات)
         // ============================================================
 
         (function() {
             'use strict';
 
             // ==========================================================
-            // 1. SUPABASE CONFIG
+            // 1. SUPABASE INIT
             // ==========================================================
-            const SUPABASE_URL = 'https://swzfalqiqwoawjihcauu.supabase.co';
-            const SUPABASE_KEY = 'sb_publishable_eN6V6meQzske2R5FK-0Qow_GV24R0uj';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            const supabaseUrl = 'https://swzfalqiqwoawjihcauu.supabase.co';
+            const supabaseKey = 'sb_publishable_eN6V6meQzske2R5FK-0Qow_GV24R0uj';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
             // ==========================================================
-            // 2. STATE
+            // 2. PARTICLES (مختصر)
+            // ==========================================================
+            (function initParticles() {
+                const canvas = document.getElementById('particles-canvas');
+                const ctx = canvas.getContext('2d');
+                let w, h;
+                let particles = [];
+                const COUNT = 45;
+                resize();
+
+                function resize() {
+                    const rect = document.getElementById('app').getBoundingClientRect();
+                    w = canvas.width = rect.width;
+                    h = canvas.height = rect.height;
+                }
+                window.addEventListener('resize', resize);
+
+                class Particle {
+                    constructor() { this.reset(); }
+                    reset() {
+                        this.x = Math.random() * w;
+                        this.y = Math.random() * h;
+                        this.size = Math.random() * 2 + 0.5;
+                        this.speedX = (Math.random() - 0.5) * 0.4;
+                        this.speedY = (Math.random() - 0.5) * 0.4;
+                        this.opacity = Math.random() * 0.4 + 0.1;
+                    }
+                    update() {
+                        this.x += this.speedX;
+                        this.y += this.speedY;
+                        if (this.x < 0 || this.x > w) { this.speedX *= -1;
+                            this.x = Math.max(0, Math.min(w, this.x)); }
+                        if (this.y < 0 || this.y > h) { this.speedY *= -1;
+                            this.y = Math.max(0, Math.min(h, this.y)); }
+                    }
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(139, 92, 246, ${this.opacity})`;
+                        ctx.fill();
+                    }
+                }
+                for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+                function drawLines() {
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 120) {
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                const alpha = (1 - dist / 120) * 0.15;
+                                ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+                                ctx.lineWidth = 0.5;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                function loop() {
+                    ctx.clearRect(0, 0, w, h);
+                    particles.forEach(p => { p.update();
+                        p.draw(); });
+                    drawLines();
+                    requestAnimationFrame(loop);
+                }
+                loop();
+                const ro = new ResizeObserver(() => resize());
+                ro.observe(document.getElementById('app'));
+            })();
+
+            // ==========================================================
+            // 3. STATE
             // ==========================================================
             let state = {
                 currentUser: null,
@@ -3147,11 +3240,11 @@
             let voiceLevelInterval = null;
 
             // ==========================================================
-            // 3. LOCALSTORAGE
+            // 4. LOCALSTORAGE
             // ==========================================================
             function loadState() {
                 try {
-                    const saved = localStorage.getItem('twinz_final');
+                    const saved = localStorage.getItem('twinz_state_final2');
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         state = { ...state, ...parsed };
@@ -3165,13 +3258,14 @@
                 try {
                     const toSave = { ...state };
                     if (toSave.music && toSave.music.audio) toSave.music.audio = null;
+                    // لا نحفظ كائن الصوت
                     toSave.voice = { ...toSave.voice, stream: null, peers: {}, peerAudios: {} };
-                    localStorage.setItem('twinz_final', JSON.stringify(toSave));
+                    localStorage.setItem('twinz_state_final2', JSON.stringify(toSave));
                 } catch (e) { /* ignore */ }
             }
 
             // ==========================================================
-            // 4. SCREENS
+            // 5. SCREENS
             // ==========================================================
             const screens = {};
             let currentScreen = 'splash';
@@ -3238,7 +3332,7 @@
             }
 
             // ==========================================================
-            // 5. AUTH UI
+            // 6. AUTH UI (نفس السابق)
             // ==========================================================
             document.querySelectorAll('.toggle-password').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -3279,7 +3373,7 @@
             });
 
             // ==========================================================
-            // 6. AUTH ACTIONS
+            // 7. AUTH ACTIONS (مختصر)
             // ==========================================================
             document.getElementById('loginBtn').addEventListener('click', async function() {
                 const email = document.getElementById('loginEmail').value.trim();
@@ -3339,10 +3433,7 @@
                                 is_verified: false,
                                 is_banned: false,
                                 is_muted: false,
-                                is_kicked: false,
-                                block_ban: false,
-                                block_kick: false,
-                                block_mute: false
+                                is_kicked: false
                             };
                             const { data: inserted, error: insertError } = await supabase
                                 .from('profiles')
@@ -3429,10 +3520,7 @@
                             is_verified: false,
                             is_banned: false,
                             is_muted: false,
-                            is_kicked: false,
-                            block_ban: false,
-                            block_kick: false,
-                            block_mute: false
+                            is_kicked: false
                         };
                         const { error: insertError } = await supabase
                             .from('profiles')
@@ -3509,7 +3597,7 @@
             }
 
             // ==========================================================
-            // 7. LOAD DATA
+            // 8. ADMIN SETTINGS, FAVORITES, FOLLOWS
             // ==========================================================
             async function loadAdminSettings() {
                 try {
@@ -3628,7 +3716,7 @@
             }
 
             // ==========================================================
-            // 8. SUPABASE HELPERS
+            // 9. SUPABASE HELPERS
             // ==========================================================
             async function fetchProfiles() {
                 const { data, error } = await supabase.from('profiles').select('*');
@@ -3723,7 +3811,7 @@
             }
 
             // ==========================================================
-            // 9. RENDER HELPERS
+            // 10. RENDER HELPERS
             // ==========================================================
             function renderVerifiedBadge(user, small = false) {
                 if (!user || !user.is_verified) return '';
@@ -3737,7 +3825,7 @@
             }
 
             // ==========================================================
-            // 10. MAIN FEED
+            // 11. MAIN FEED
             // ==========================================================
             async function renderMainFeed() {
                 const profiles = await fetchProfiles();
@@ -3915,7 +4003,7 @@
             }
 
             // ==========================================================
-            // 11. VOICE ROOMS
+            // 12. VOICE ROOMS
             // ==========================================================
             async function renderRooms() {
                 const rooms = await fetchRooms();
@@ -4024,7 +4112,7 @@
             }
 
             // ==========================================================
-            // 12. ROOM DETAIL (مع الصوت ووظائف الإدارة)
+            // 13. ROOM DETAIL (مع الصوت)
             // ==========================================================
             const RTC_CONFIG = {
                 iceServers: [
@@ -4115,7 +4203,7 @@
                     }
                 });
 
-                // ===== ADMIN TOOLS (تطبيق منع الطرد/الكتم/الحظر) =====
+                // Admin tools
                 const adminTools = document.getElementById('rdAdminTools');
                 const adminButtons = document.getElementById('rdAdminButtons');
                 if (isHost && state.currentUser) {
@@ -4126,15 +4214,14 @@
                         otherUsers.forEach(uid => {
                             const user = state.users.find(u => u.id === uid);
                             if (!user) return;
-                            // التحقق من صلاحيات الإدارة من لوحة التحكم
                             const canKick = state.adminSettings.allow_kick && !user.block_kick;
                             const canMute = state.adminSettings.allow_mute && !user.block_mute;
                             const canBan = state.adminSettings.allow_ban && !user.block_ban;
                             btnsHtml += `
                                 <span style="font-size:10px;color:var(--text-secondary);margin-left:4px;">${user.full_name}</span>
-                                <button class="btn-danger" onclick="roomKickUser('${uid}')" ${!canKick ? 'disabled' : ''} title="${!canKick ? 'تم منع الطرد من قبل المشرف' : ''}">🚪 طرد</button>
-                                <button class="btn-mute" onclick="roomMuteUser('${uid}')" ${!canMute ? 'disabled' : ''} title="${!canMute ? 'تم منع الكتم من قبل المشرف' : ''}">${user.is_muted ? '🔊' : '🔇'}</button>
-                                <button class="btn-warning" onclick="roomBanUser('${uid}')" ${!canBan ? 'disabled' : ''} title="${!canBan ? 'تم منع الحظر من قبل المشرف' : ''}">🚫 حظر</button>
+                                <button class="btn-danger" onclick="roomKickUser('${uid}')" ${!canKick ? 'disabled' : ''}>🚪 طرد</button>
+                                <button class="btn-mute" onclick="roomMuteUser('${uid}')" ${!canMute ? 'disabled' : ''}>${user.is_muted ? '🔊' : '🔇'}</button>
+                                <button class="btn-warning" onclick="roomBanUser('${uid}')" ${!canBan ? 'disabled' : ''}>🚫 حظر</button>
                             `;
                         });
                     } else {
@@ -4145,7 +4232,7 @@
                     adminTools.style.display = 'none';
                 }
 
-                // ===== ROOM MESSAGES =====
+                // Room messages
                 const messages = await fetchRoomMessages(roomId);
                 const msgsContainer = document.getElementById('rdPageMessages');
                 msgsContainer.innerHTML = messages.map(m => {
@@ -4161,7 +4248,7 @@
                 }).join('') || '<div style="color:var(--text-light);font-size:13px;text-align:center;">لا توجد رسائل</div>';
                 msgsContainer.scrollTop = msgsContainer.scrollHeight;
 
-                // ===== RESET MUSIC =====
+                // Reset music
                 document.getElementById('mpProgressFill').style.width = '0%';
                 document.getElementById('mpCurrentTime').textContent = '00:00';
                 document.getElementById('mpDuration').textContent = '00:00';
@@ -4177,10 +4264,10 @@
                 state.music.progress = 0;
                 state.music.isLocal = false;
 
-                // ===== VOICE CONTROLS =====
+                // Setup voice controls
                 setupVoiceControls();
 
-                // ===== SEAT CLICKS =====
+                // Seat clicks
                 seatsContainer.querySelectorAll('.rd-seat').forEach(el => {
                     el.addEventListener('click', async function() {
                         const idx = parseInt(this.dataset.seat);
@@ -4206,6 +4293,7 @@
                             showToast('انضممت إلى المقعد 🎤', 'success');
                             renderRooms();
                             openRoomDetailPage(state.currentRoomId);
+                            // Auto-enable voice if not already
                             if (!state.voice.enabled) {
                                 setTimeout(() => toggleVoice(true), 500);
                             }
@@ -4213,7 +4301,6 @@
                     });
                 });
 
-                // ===== SEND ROOM MESSAGE =====
                 document.getElementById('rdPageSendBtn').onclick = async function() {
                     const input = document.getElementById('rdPageInput');
                     const text = input.value.trim();
@@ -4239,7 +4326,7 @@
                     if (e.key === 'Enter') document.getElementById('rdPageSendBtn').click();
                 });
 
-                // ===== WEBRTC SETUP =====
+                // === WEBRTC SETUP ===
                 await setupRoomSignaling(roomId);
 
                 page.classList.add('active');
@@ -4261,19 +4348,10 @@
             document.getElementById('rdBack').addEventListener('click', closeRoomDetailPage);
 
             // ==========================================================
-            // 13. ROOM ADMIN FUNCTIONS (مع منع الإجراءات)
+            // 14. ROOM ADMIN FUNCTIONS
             // ==========================================================
             window.roomKickUser = async function(userId) {
                 if (!state.currentUser) return;
-                const user = state.users.find(u => u.id === userId);
-                if (user && user.block_kick) {
-                    showToast(`🚫 لا يمكنك طرد هذا المستخدم (تم منع الطرد من قبل المشرف)`, 'error');
-                    return;
-                }
-                if (!state.adminSettings.allow_kick) {
-                    showToast(`🚫 ميزة الطرد معطلة من قبل المشرف`, 'error');
-                    return;
-                }
                 if (!confirm('هل تريد طرد هذا المستخدم من الغرفة؟')) return;
                 const room = state.rooms.find(r => r.id == state.currentRoomId);
                 if (!room) return;
@@ -4293,17 +4371,8 @@
             window.roomMuteUser = async function(userId) {
                 if (!state.currentUser) return;
                 const user = state.users.find(u => u.id === userId);
-                if (user && user.block_mute) {
-                    showToast(`🚫 لا يمكنك كتم هذا المستخدم (تم منع الكتم من قبل المشرف)`, 'error');
-                    return;
-                }
-                if (!state.adminSettings.allow_mute) {
-                    showToast(`🚫 ميزة الكتم معطلة من قبل المشرف`, 'error');
-                    return;
-                }
-                const userObj = state.users.find(u => u.id === userId);
-                if (!userObj) return;
-                const newMuteState = !userObj.is_muted;
+                if (!user) return;
+                const newMuteState = !user.is_muted;
                 const action = newMuteState ? 'كتم' : 'رفع الكتم عن';
                 if (!confirm(`هل تريد ${action} هذا المستخدم؟`)) return;
                 const { error } = await supabase
@@ -4312,22 +4381,13 @@
                     .eq('id', userId);
                 if (error) { showToast('خطأ: ' + error.message, 'error'); return; }
                 showToast(`✅ تم ${action} المستخدم`, 'success');
-                userObj.is_muted = newMuteState;
+                user.is_muted = newMuteState;
                 renderRooms();
                 openRoomDetailPage(state.currentRoomId);
             };
 
             window.roomBanUser = async function(userId) {
                 if (!state.currentUser) return;
-                const user = state.users.find(u => u.id === userId);
-                if (user && user.block_ban) {
-                    showToast(`🚫 لا يمكنك حظر هذا المستخدم (تم منع الحظر من قبل المشرف)`, 'error');
-                    return;
-                }
-                if (!state.adminSettings.allow_ban) {
-                    showToast(`🚫 ميزة الحظر معطلة من قبل المشرف`, 'error');
-                    return;
-                }
                 if (!confirm('⚠️ هل تريد حظر هذا المستخدم نهائياً من التطبيق؟')) return;
                 const reason = prompt('سبب الحظر:');
                 if (reason === null) return;
@@ -4360,7 +4420,7 @@
             };
 
             // ==========================================================
-            // 14. VOICE CONTROLS
+            // 15. VOICE CONTROLS (WebRTC)
             // ==========================================================
             function setupVoiceControls() {
                 const toggleBtn = document.getElementById('vcToggleBtn');
@@ -4388,6 +4448,7 @@
                     if (state.voice.stream) {
                         state.voice.stream.getTracks().forEach(t => t.enabled = !state.voice.muted);
                     }
+                    // Update seat mic
                     if (state.voice.mySeatIndex >= 0) {
                         const seatMic = document.getElementById(`seatMic_${state.voice.mySeatIndex}`);
                         if (seatMic) {
@@ -4430,6 +4491,7 @@
                         state.voice.enabled = true;
                         state.voice.muted = false;
 
+                        // Update seat mic
                         if (state.voice.mySeatIndex >= 0) {
                             const seatMic = document.getElementById(`seatMic_${state.voice.mySeatIndex}`);
                             if (seatMic) {
@@ -4439,6 +4501,7 @@
                             }
                         }
 
+                        // Add stream to all existing peer connections
                         for (const peerId in state.voice.peers) {
                             const pc = state.voice.peers[peerId];
                             if (pc) {
@@ -4446,6 +4509,7 @@
                                     try { pc.addTrack(track, stream); } catch (e) { console.warn(
                                         'Add track error:', e); }
                                 });
+                                // Re-negotiate if needed
                                 if (pc.signalingState === 'stable' && state.currentUser.id < peerId) {
                                     try {
                                         const offer = await pc.createOffer();
@@ -4464,7 +4528,9 @@
                             }
                         }
 
+                        // Start level monitoring
                         startVoiceLevelMonitoring();
+
                         showToast('🎤 الميكروفون نشط', 'success');
                         updateVoiceUI();
                         saveState();
@@ -4489,6 +4555,7 @@
                 clearInterval(voiceLevelInterval);
                 voiceLevelInterval = null;
 
+                // Update seat mic
                 if (state.voice.mySeatIndex >= 0) {
                     const seatMic = document.getElementById(`seatMic_${state.voice.mySeatIndex}`);
                     if (seatMic) {
@@ -4499,6 +4566,7 @@
                     }
                 }
 
+                // Remove tracks from peers
                 for (const peerId in state.voice.peers) {
                     const pc = state.voice.peers[peerId];
                     if (pc) {
@@ -4528,6 +4596,7 @@
                         document.getElementById('vcLevelFill').classList.remove('speaking');
                         return;
                     }
+                    // Simulate level
                     const level = 0.1 + Math.random() * 0.7;
                     document.getElementById('vcLevelFill').style.width = (level * 100) + '%';
                     if (level > 0.3) {
@@ -4590,7 +4659,7 @@
             }
 
             // ==========================================================
-            // 15. WEBRTC SIGNALING
+            // 16. WEBRTC SIGNALING
             // ==========================================================
             async function setupRoomSignaling(roomId) {
                 if (signalChannel) {
@@ -4607,9 +4676,11 @@
                     await handleSignalingMessage(data);
                 });
 
+                // Listen for presence to initiate connections
                 signalChannel.on('broadcast', { event: 'presence' }, (payload) => {
                     const data = payload.payload;
                     if (data.from === state.currentUser.id) return;
+                    // Someone joined - initiate connection
                     const room = state.rooms.find(r => r.id == roomId);
                     if (room && room.occupants) {
                         const otherUsers = room.occupants.filter(uid => uid !== state.currentUser.id);
@@ -4624,12 +4695,14 @@
                 await signalChannel.subscribe();
                 console.log('📡 Signal channel subscribed for room:', roomId);
 
+                // Broadcast presence
                 signalChannel.send({
                     type: 'broadcast',
                     event: 'presence',
                     payload: { from: state.currentUser.id, name: state.currentUser.full_name, action: 'join' }
                 });
 
+                // Initialize peer connections for existing occupants
                 const room = state.rooms.find(r => r.id == roomId);
                 if (room && room.occupants) {
                     const others = room.occupants.filter(uid => uid !== state.currentUser.id);
@@ -4684,6 +4757,7 @@
                 const pc = new RTCPeerConnection(RTC_CONFIG);
                 state.voice.peers[peerId] = pc;
 
+                // Add local audio stream if available
                 if (state.voice.stream) {
                     state.voice.stream.getTracks().forEach(track => {
                         try { pc.addTrack(track, state.voice.stream); } catch (e) {}
@@ -4699,6 +4773,7 @@
                     audio.play().catch(e => console.log('Audio play error:', e));
                     state.voice.peerAudios[peerId] = audio;
 
+                    // Update seat mic
                     const room = state.rooms.find(r => r.id == state.currentRoomId);
                     if (room) {
                         const idx = room.occupants?.indexOf(peerId);
@@ -4745,6 +4820,7 @@
                     }
                 };
 
+                // Create offer if we are the initiator
                 if (state.currentUser.id < peerId) {
                     try {
                         const offer = await pc.createOffer();
@@ -4787,7 +4863,7 @@
             }
 
             // ==========================================================
-            // 16. ROOM SETTINGS
+            // 17. ROOM SETTINGS (مع رفع الصورة)
             // ==========================================================
             function openRoomSettings(roomId) {
                 const room = state.rooms.find(r => r.id == roomId);
@@ -4921,7 +4997,7 @@
             });
 
             // ==========================================================
-            // 17. MUSIC PLAYER
+            // 18. MUSIC PLAYER (مختصر)
             // ==========================================================
             function setupMusicControls() {
                 const playBtn = document.getElementById('mpPlayBtn');
@@ -5104,7 +5180,7 @@
             }
 
             // ==========================================================
-            // 18. PRIVATE CHAT (يعمل)
+            // 19. PRIVATE CHAT (يعمل)
             // ==========================================================
             async function renderChatList() {
                 const container = document.getElementById('chatList');
@@ -5312,7 +5388,7 @@
             }
 
             // ==========================================================
-            // 19. CHAT UI EVENTS
+            // 20. CHAT UI EVENTS
             // ==========================================================
             document.getElementById('cdSendBtn').addEventListener('click', sendChatMessage);
             document.getElementById('cdInput').addEventListener('keydown', function(e) {
@@ -5345,7 +5421,7 @@
             });
 
             // ==========================================================
-            // 20. PROFILE
+            // 21. PROFILE (مع رفع الصور)
             // ==========================================================
             async function renderProfile() {
                 const container = document.getElementById('profileMainContainer');
@@ -5404,7 +5480,9 @@
                     </div>
                 `;
 
+                // ==========================================================
                 // تغيير الصورة الشخصية
+                // ==========================================================
                 document.getElementById('changeAvatarBtn').addEventListener('click', function() {
                     document.getElementById('avatarFileInput').click();
                 });
@@ -5463,7 +5541,9 @@
                     this.value = '';
                 };
 
+                // ==========================================================
                 // تغيير الغلاف
+                // ==========================================================
                 document.getElementById('changeCoverBtn').addEventListener('click', function() {
                     document.getElementById('coverFileInput').click();
                 });
@@ -5521,7 +5601,9 @@
                     this.value = '';
                 };
 
+                // ==========================================================
                 // تعديل الملف الشخصي
+                // ==========================================================
                 document.getElementById('editProfileBtn').addEventListener('click', function() {
                     const newName = prompt('الاسم:', user.full_name || '');
                     if (newName !== null && newName.trim()) user.full_name = newName.trim();
@@ -5566,7 +5648,7 @@
             }
 
             // ==========================================================
-            // 21. NOTIFICATIONS & SEARCH
+            // 22. NOTIFICATIONS & SEARCH
             // ==========================================================
             async function renderNotifications() {
                 const list = document.getElementById('notifList');
@@ -5691,7 +5773,7 @@
             document.getElementById('searchInput').addEventListener('input', function() { renderSearch(this.value); });
 
             // ==========================================================
-            // 22. TABS, BOTTOM NAV, CREATE ROOM, BADGES, TOAST, INIT
+            // 23. TABS, BOTTOM NAV, CREATE ROOM, BADGES, TOAST, INIT
             // ==========================================================
             document.querySelectorAll('.feed-tabs .tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -5785,7 +5867,7 @@
             }
 
             // ==========================================================
-            // 23. WINDOW HELPERS
+            // 24. WINDOW HELPERS
             // ==========================================================
             window._twinzChat = function(id) { state.chatPartnerId = id;
                 navigateTo('chatDetail', id); };
@@ -5794,7 +5876,7 @@
             window._openRoomDetail = openRoomDetailPage;
 
             // ==========================================================
-            // 24. INIT
+            // 25. INIT
             // ==========================================================
             async function init() {
                 loadState();
@@ -5836,7 +5918,7 @@
                 updateBadges();
                 setInterval(updateBadges, 30000);
 
-                console.log('🚀 توينز — الإصدار النهائي مع دعم كامل للوحة التحكم');
+                console.log('🚀 توينز — الإصدار النهائي مع الصوت والشات');
                 console.log('📦 State:', state);
             }
 
